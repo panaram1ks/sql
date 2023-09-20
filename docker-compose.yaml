@@ -1,0 +1,14 @@
+services:
+
+  db:
+    image: postgres:14.1
+    restart: always
+    environment:
+      POSTGRES_USER: parom
+      POSTGRES_PASSWORD: parom
+      POSTGRES_DB: mydb
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - /home/parom/IdeaProjects/SQLdmdev/dataPostgresContainer/:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
