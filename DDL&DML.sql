@@ -25,3 +25,18 @@ INSERT INTO company_storage.company(id, name, date)
 VALUES (1, 'Google', '2001-01-01'),
        (2, 'Apple', '2002-01-29'),
        (3, 'Facebook', '1998-09-13');
+
+CREATE TABLE company_storage.employee
+(
+    id         SERIAL PRIMARY KEY,
+    first_name varchar(128) not null,
+    last_name  varchar(128) not null,
+    salary     INT,
+    UNIQUE (first_name, last_name)
+);
+-- DROP TABLE company_storage.employee;
+
+insert into company_storage.employee (first_name, last_name, salary)
+values ('Ivan', 'Ivanov', 100),
+       ('Petr', 'Petrov', 2000),
+       ('Sveta', 'Svetikova', 1500);
