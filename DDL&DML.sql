@@ -57,3 +57,23 @@ WHERE salary IN (500, 2000)
 ORDER BY first_name, salary;
 -- LIMIT 2
 -- OFFSET 3;
+
+
+-- sum, avg, max, min, count
+SELECT upper(first_name),
+       lower(last_name),
+       concat(first_name, ' ', last_name) fio,
+       first_name || ' ' || last_name fioSecondVar,
+       now()
+FROM company_storage.employee;
+
+SELECT sum(salary)
+FROM company_storage.employee AS empl;
+
+SELECT avg(salary)
+FROM company_storage.employee AS empl;
+
+-- count(*) - count all rows include NUL
+-- count(salary) - count only rows where salary != NULL
+SELECT count(*) -- count amount of rows in select
+FROM company_storage.employee AS empl;
