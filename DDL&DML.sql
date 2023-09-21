@@ -31,16 +31,20 @@ CREATE TABLE company_storage.employee
     id         SERIAL PRIMARY KEY,
     first_name varchar(128) not null,
     last_name  varchar(128) not null,
+    company_id INT REFERENCES company_storage.company (id),
     salary     INT,
     UNIQUE (first_name, last_name)
+--     FOREIGN KEY (company_id) REFERENCES  company(id) -- second var write the same
 );
--- DROP TABLE company_storage.employee;
 
-insert into company_storage.employee (first_name, last_name, salary)
-values ('Ivan', 'Sidorov', 500),
-       ('Ivan', 'Ivanov', 100),
-       ('Petr', 'Petrov', 2000),
-       ('Sveta', 'Svetikova', 1500);
+DROP TABLE company_storage.employee;
+
+insert into company_storage.employee (first_name, last_name, salary, company_id)
+values ('Ivan', 'Sidorov', 500, 1),
+       ('Ivan', 'Ivanov', 100, 2),
+       ('Petr', 'Petrov', 2000, 2),
+       ('Arny', 'Paramonov', NULL, 3),
+       ('Sveta', 'Svetikova', 1500, NULL);
 
 SELECT DISTINCT id,
                 first_name AS f_name,
@@ -63,7 +67,7 @@ ORDER BY first_name, salary;
 SELECT upper(first_name),
        lower(last_name),
        concat(first_name, ' ', last_name) fio,
-       first_name || ' ' || last_name fioSecondVar,
+       first_name || ' ' || last_name     fioSecondVar,
        now()
 FROM company_storage.employee;
 
