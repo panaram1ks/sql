@@ -88,7 +88,33 @@ SELECT first_name
 FROM company_storage.employee
 WHERE company_id IS NOT NULL
 -- UNION ALL
-UNION -- like distinct
+UNION
+-- like distinct
 SELECT first_name
 FROM company_storage.employee
 WHERE salary IS NULL;
+
+
+-- we want get average salary both worst workers
+-- alias for second dataset is required
+SELECT avg(empl.salary)
+FROM (SELECT *
+      FROM company_storage.employee
+      ORDER BY salary ASC
+      LIMIT 2) AS empl;
+
+SELECT *,
+       (SELECT avg(salary) FROM company_storage.employee) avg,
+       (SELECT max(salary) FROM company_storage.employee) max,
+       (SELECT max(salary) FROM company_storage.employee) - salary diff
+FROM company_storage.employee;
+
+SELECT *
+FROM company_storage.employee
+WHERE company_id IN (SELECT id FROM company_storage.company WHERE date > '2001-01-01');
+
+SELECT * FROM (values ('Ivan', 'Sidorov', 500, 1),
+    ('Ivan', 'Ivanov', 100, 2),
+    ('Petr', 'Petrov', 2000, 2),
+    ('Arny', 'Paramonov', NULL, 3),
+    ('Sveta', 'Svetikova', 1500, NULL)) al;
