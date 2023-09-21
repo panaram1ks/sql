@@ -130,3 +130,9 @@ WHERE salary = (SELECT max(salary) FROM company_storage.employee);
 
 DELETE FROM company_storage.company
 WHERE id = 1;
+
+UPDATE company_storage.employee
+SET company_id = 2,
+    salary = 1800
+WHERE id = 5
+    RETURNING *;
