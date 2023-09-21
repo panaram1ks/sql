@@ -81,3 +81,14 @@ FROM company_storage.employee AS empl;
 -- count(salary) - count only rows where salary != NULL
 SELECT count(*) -- count amount of rows in select
 FROM company_storage.employee AS empl;
+
+
+-- amount of columns should match and type of columns should match to each other
+SELECT first_name
+FROM company_storage.employee
+WHERE company_id IS NOT NULL
+-- UNION ALL
+UNION -- like distinct
+SELECT first_name
+FROM company_storage.employee
+WHERE salary IS NULL;
