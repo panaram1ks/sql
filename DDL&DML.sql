@@ -31,7 +31,7 @@ CREATE TABLE company_storage.employee
     id         SERIAL PRIMARY KEY,
     first_name varchar(128) not null,
     last_name  varchar(128) not null,
-    company_id INT REFERENCES company_storage.company (id),
+    company_id INT REFERENCES company_storage.company (id) ON DELETE CASCADE ,
     salary     INT,
     UNIQUE (first_name, last_name)
 --     FOREIGN KEY (company_id) REFERENCES  company(id) -- second var write the same
@@ -118,3 +118,15 @@ SELECT * FROM (values ('Ivan', 'Sidorov', 500, 1),
     ('Petr', 'Petrov', 2000, 2),
     ('Arny', 'Paramonov', NULL, 3),
     ('Sveta', 'Svetikova', 1500, NULL)) al;
+
+
+DELETE FROM company_storage.employee; -- delete all entries from table
+
+DELETE FROM company_storage.employee
+WHERE salary IS NULL ;
+
+DELETE FROM company_storage.employee
+WHERE salary = (SELECT max(salary) FROM company_storage.employee);
+
+DELETE FROM company_storage.company
+WHERE id = 1;
