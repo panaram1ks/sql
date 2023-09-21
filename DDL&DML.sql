@@ -42,12 +42,18 @@ values ('Ivan', 'Sidorov', 500),
        ('Petr', 'Petrov', 2000),
        ('Sveta', 'Svetikova', 1500);
 
-SELECT DISTINCT
-    id,
-    first_name AS f_name,
-    last_name     l_name,
-    salary
+SELECT DISTINCT id,
+                first_name AS f_name,
+                last_name     l_name,
+                salary
 FROM company_storage.employee AS empl
-ORDER BY first_name, salary ;
+-- WHERE salary > 1000    -- != or <>
+-- WHERE first_name <> 'Ivan'
+-- WHERE first_name LIKE 'Pet%'
+-- WHERE first_name ILIKE 'pet%'
+-- WHERE salary BETWEEN 1000 AND 1500
+WHERE salary IN (500, 2000)
+   OR first_name LIKE 'Sve%'
+ORDER BY first_name, salary;
 -- LIMIT 2
 -- OFFSET 3;
