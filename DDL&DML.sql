@@ -37,6 +37,17 @@ CREATE TABLE company_storage.employee
 -- DROP TABLE company_storage.employee;
 
 insert into company_storage.employee (first_name, last_name, salary)
-values ('Ivan', 'Ivanov', 100),
+values ('Ivan', 'Sidorov', 500),
+       ('Ivan', 'Ivanov', 100),
        ('Petr', 'Petrov', 2000),
        ('Sveta', 'Svetikova', 1500);
+
+SELECT DISTINCT
+    id,
+    first_name AS f_name,
+    last_name     l_name,
+    salary
+FROM company_storage.employee AS empl
+ORDER BY first_name, salary ;
+-- LIMIT 2
+-- OFFSET 3;
