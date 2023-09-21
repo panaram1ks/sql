@@ -31,7 +31,7 @@ CREATE TABLE company_storage.employee
     id         SERIAL PRIMARY KEY,
     first_name varchar(128) not null,
     last_name  varchar(128) not null,
-    company_id INT REFERENCES company_storage.company (id) ON DELETE CASCADE ,
+    company_id INT REFERENCES company_storage.company (id) ON DELETE CASCADE,
     salary     INT,
     UNIQUE (first_name, last_name)
 --     FOREIGN KEY (company_id) REFERENCES  company(id) -- second var write the same
@@ -104,8 +104,8 @@ FROM (SELECT *
       LIMIT 2) AS empl;
 
 SELECT *,
-       (SELECT avg(salary) FROM company_storage.employee) avg,
-       (SELECT max(salary) FROM company_storage.employee) max,
+       (SELECT avg(salary) FROM company_storage.employee)          avg,
+       (SELECT max(salary) FROM company_storage.employee)          max,
        (SELECT max(salary) FROM company_storage.employee) - salary diff
 FROM company_storage.employee;
 
@@ -113,26 +113,143 @@ SELECT *
 FROM company_storage.employee
 WHERE company_id IN (SELECT id FROM company_storage.company WHERE date > '2001-01-01');
 
-SELECT * FROM (values ('Ivan', 'Sidorov', 500, 1),
+SELECT *
+FROM (values ('Ivan', 'Sidorov', 500, 1),
     ('Ivan', 'Ivanov', 100, 2),
     ('Petr', 'Petrov', 2000, 2),
     ('Arny', 'Paramonov', NULL, 3),
     ('Sveta', 'Svetikova', 1500, NULL)) al;
 
 
-DELETE FROM company_storage.employee; -- delete all entries from table
+DELETE
+FROM company_storage.employee; -- delete all entries from table
 
-DELETE FROM company_storage.employee
-WHERE salary IS NULL ;
+DELETE
+FROM company_storage.employee
+WHERE salary IS NULL;
 
-DELETE FROM company_storage.employee
+DELETE
+FROM company_storage.employee
 WHERE salary = (SELECT max(salary) FROM company_storage.employee);
 
-DELETE FROM company_storage.company
+DELETE
+FROM company_storage.company
 WHERE id = 1;
 
 UPDATE company_storage.employee
 SET company_id = 2,
-    salary = 1800
+    salary     = 1800
 WHERE id = 5
     RETURNING *;
+
+
+-- practice
+CREATE DATABASE book_repository;
+
+CREATE SCHEMA book_schema;
+
+CREATE TABLE book_schema.author
+(
+    id         SERIAL PRIMARY KEY,
+    first_name VARCHAR(128) not null,
+    last_name  VARCHAR(128) not null
+);
+
+CREATE TABLE book_schema.book
+(
+    id        BIGSERIAL PRIMARY KEY,
+    name      VARCHAR(128) not null,
+    year      SMALLINT     NOT NULL,
+    pages     SMALLINT     NOT NULL,
+    author_id INT REFERENCES book_schema.author (id)
+);
+
+INSERT INTO book_schema.author (first_name, last_name)
+VALUES ('Кей', 'Хорстманн'),
+       ('Стивен', 'Кови'),
+       ('Тони', 'Роббинс'),
+       ('Наполеон', 'Хилл'),
+       ('Роберт', 'Кийосаки'),
+       ('Дейл', 'Карнеги');
+SELECT *
+FROM book_schema.author;
+
+INSERT INTO book_schema.book (name, year, pages, author_id)
+values ('Java. Библиотеку профессионала. Том 1', 2010, 1102,
+        (SELECT id FROM book_schema.author WHERE last_name = 'Хорстманн')),
+       ('Java. Библиотеку профессионала. Том 2', 2012, 954,
+        (SELECT id FROM book_schema.author WHERE last_name = 'Хорстманн')),
+       ('Java SE 8. Вводный курс', 2015, 203, (SELECT id FROM book_schema.author WHERE last_name = 'Хорстманн')),
+       ('7 навыков высокоэффективных людей', 1989, 396, (SELECT id FROM book_schema.author WHERE last_name = 'Кови')),
+       ('Разбуди в себе исполина', 1991, 576, (SELECT id FROM book_schema.author WHERE last_name = 'Роббинс')),
+       ('Думай и богатей', 1937, 336, (SELECT id FROM book_schema.author WHERE last_name = 'Хилл')),
+       ('Богатый папа, бедный папа', 1997, 352, (SELECT id FROM book_schema.author WHERE last_name = 'Кийосаки')),
+       ('Квадрант денежного потока', 1998, 368, (SELECT id FROM book_schema.author WHERE last_name = 'Кийосаки')),
+       ('Как перестать беспокоиться и начать жить', 1948, 368,
+        (SELECT id FROM book_schema.author WHERE last_name = 'Карнеги')),
+       ('Как завоевывать друзей и оказывать влияние на людей', 1936, 352,
+        (SELECT id FROM book_schema.author WHERE last_name = 'Карнеги'));
+
+SELECT name, year, a.first_name
+FROM book_schema.book
+         INNER JOIN book_schema.author a on a.id = book.author_id
+ORDER BY year ASC;
+SELECT b.name,
+       b.year,
+       (SELECT a.first_name FROM book_schema.author a WHERE a.id = b.author_id)
+FROM book_schema.book b
+ORDER BY b.year;
+
+
+SELECT name, year, a.first_name
+FROM book_schema.book
+         INNER JOIN book_schema.author a on a.id = book.author_id
+ORDER BY year DESC;
+
+SELECT count(book.id), a.first_name
+FROM book_schema.book
+         INNER JOIN book_schema.author a on a.id = book.author_id
+GROUP BY a.first_name;
+
+SELECT *
+FROM book_schema.book
+where pages > (SELECT avg(pages) FROM book_schema.book);
+
+
+SELECT sum(pages)
+FROM book_schema.book
+WHERE year >= (SELECT min(year) FROM book_schema.book)
+LIMIT 5;
+
+SELECT *
+FROM book_schema.book
+ORDER BY year
+LIMIT 5;
+
+SELECT sum(pages) FROM book_schema.book;
+
+SELECT sum(pages) FROM (SELECT *
+                        FROM book_schema.book
+                        ORDER BY year
+                        LIMIT 5) as books;
+
+
+
+SELECT *, (SELECT sum(pages) FROM book_schema.book WHERE year >= (SELECT min(year) FROM book_schema.book) LIMIT 5)
+FROM book_schema.book
+WHERE year >= (SELECT min(year) FROM book_schema.book)
+group by id, name, year, pages, author_id
+LIMIT 5;
+
+UPDATE book_schema.book
+SET pages = 5000
+WHERE year = (SELECT max(year) FROM book_schema.book);
+
+DELETE
+FROM book_schema.author
+where id = (SELECT author_id FROM book_schema.book where pages = (SELECT max(pages) FROM book_schema.book))
+    RETURNING first_name, last_name;
+
+DELETE FROM book_schema.book
+WHERE author_id = (SELECT author_id FROM book_schema.book where pages = (SELECT max(pages) FROM book_schema.book));
+
