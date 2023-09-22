@@ -199,3 +199,15 @@ select  f.id,
         (f.arrival_date - f.departure_date) duration
 from flight f
 order by  (f.arrival_date - f.departure_date) DESC ;
+
+select first_value(f.arrival_date - f.departure_date)
+                   over (order by (f.arrival_date - f.departure_date) desc )  max_value,
+       first_value(f.arrival_date - f.departure_date)
+                   over (order by (f.arrival_date - f.departure_date) asc )   min_value,
+       count(*) over ()
+from flight f
+         join airport a on f.arrival_airport_code = a.code
+         join airport d on f.departure_airport_code = d.code
+where a.city = 'Лондон'
+  and d.city = 'Минск'
+limit 1;
