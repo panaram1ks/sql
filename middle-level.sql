@@ -193,3 +193,9 @@ where aircraft_id = 1
                     and departure_date::date = '2020-06-14'
                       and s.seat_no = t.seat_no);
 
+select  f.id,
+        f.arrival_date,
+        f.departure_date,
+        (f.arrival_date - f.departure_date) duration
+from flight f
+order by  (f.arrival_date - f.departure_date) DESC ;
