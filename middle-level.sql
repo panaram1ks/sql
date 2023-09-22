@@ -240,3 +240,40 @@ from (select t.flight_id, f.arrival_airport_code, f.departure_airport_code, sum(
                join flight f on f.id = t.flight_id
       group by t.flight_id, f.arrival_airport_code, f.departure_airport_code
       order by sum(t.cost) desc) t1
+
+    VALUES (1, 2),
+(3, 4),
+(5, 6),
+(7, 8)
+union all
+VALUES (1, 2),
+(3, 4),
+(5, 6),
+(7, 8);
+
+VALUES (1, 2),
+(3, 4),
+(5, 6),
+(7, 8)
+intersect
+VALUES (1, 2),
+       (3, 4);
+
+VALUES (1, 2),
+(3, 4),
+(5, 6),
+(7, 8)
+except
+VALUES (1, 2),
+       (3, 4);
+
+-- var #3
+select aircraft_id, s.seat_no
+from seat s
+where aircraft_id = 1
+    except
+select aircraft_id, t.seat_no
+from ticket t
+         join flight f on f.id = t.flight_id
+where f.flight_no = 'MN3002'
+  and f.departure_date::date = '2020-06-14'
