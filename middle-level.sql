@@ -231,3 +231,12 @@ from (
          from ticket t
          group by t.passenger_name, t.passenger_no
          order by 3 desc) t1;
+
+select t1.*,
+       COALESCE(lead(sum_cost) over ( order by t1.sum_cost), 0),
+       COALESCE(lead(sum_cost) over ( order by t1.sum_cost), 0) - t1.sum_cost
+from (select t.flight_id, f.arrival_airport_code, f.departure_airport_code, sum(t.cost) as sum_cost
+      from ticket t
+               join flight f on f.id = t.flight_id
+      group by t.flight_id, f.arrival_airport_code, f.departure_airport_code
+      order by sum(t.cost) desc) t1
