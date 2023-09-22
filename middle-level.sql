@@ -211,3 +211,12 @@ from flight f
 where a.city = 'Лондон'
   and d.city = 'Минск'
 limit 1;
+
+select t.passenger_name,
+       count(*),
+       100.0 * count(*) / (select count(*) from ticket),
+       round(100.0 * count(*) / (select count(*) from ticket), 2)
+from ticket t
+group by t.passenger_name
+-- order by count(*) desc ;
+order by 2 desc;
