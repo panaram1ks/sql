@@ -220,3 +220,14 @@ from ticket t
 group by t.passenger_name
 -- order by count(*) desc ;
 order by 2 desc;
+
+
+select t1.*,
+       first_value(t1.cnt) over () - t1.cnt AS difference
+from (
+         select t.passenger_name,
+                t.passenger_no,
+                count(*) AS cnt
+         from ticket t
+         group by t.passenger_name, t.passenger_no
+         order by 3 desc) t1;
