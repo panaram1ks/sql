@@ -35,11 +35,11 @@ CREATE TABLE flight
 CREATE TABLE ticket
 (
     id             BIGSERIAL PRIMARY KEY,
-    passenger_no   varchar(32) NOT NULL ,
-    passenger_name varchar(128) NOT NULL ,
-    flight_id      BIGINT REFERENCES flight (id) NOT NULL ,
-    seat_no        VARCHAR(4) NOT NULL,
-    cost           NUMERIC(8, 2) NOT NULL ,
+    passenger_no   varchar(32)                   NOT NULL,
+    passenger_name varchar(128)                  NOT NULL,
+    flight_id      BIGINT REFERENCES flight (id) NOT NULL,
+    seat_no        VARCHAR(4)                    NOT NULL,
+    cost           NUMERIC(8, 2)                 NOT NULL,
     UNIQUE (flight_id, seat_no)
 );
 
@@ -62,16 +62,15 @@ from aircraft
 
 insert into flight (flight_no, departure_date, departure_airport_code, arrival_date, arrival_airport_code, aircraft_id,
                     status)
-values
-    ('MN3002', '2020-06-14T14:30', 'MNK', '2020-06-14T18:07', 'LDN', 1, 'ARRIVED'),
-    ('MN3002', '2020-06-16T09:15', 'LDN', '2020-06-16T13:00', 'MNK', 1, 'ARRIVED'),
-    ('BC2801', '2020-07-28T23:25', 'MNK', '2020-07-29T02:43', 'LDN', 2, 'ARRIVED'),
-    ('BC2801', '2020-08-01T11:00', 'LDN', '2020-08-01T14:15', 'MNK', 2, 'DEPARTED'),
-    ('TR3103', '2020-05-03T13:10', 'MSK', '2020-05-03T18:38', 'BSL', 3, 'ARRIVED'),
-    ('TR3103', '2020-05-10T07:15', 'BSL', '2020-05-10T012:44', 'MSK', 3, 'CANCELLED'),
-    ('CV9827', '2020-09-09T18:00', 'MNK', '2020-09-09T19:15', 'MSK', 4, 'SCHEDULED'),
-    ('CV9827', '2020-09-19T08:55', 'MSK', '2020-09-19T10:05', 'MNK', 4, 'SCHEDULED'),
-    ('QS8712', '2020-12-18T03:35', 'MNK', '2020-12-18T06:46', 'LDN', 2, 'ARRIVED');
+values ('MN3002', '2020-06-14T14:30', 'MNK', '2020-06-14T18:07', 'LDN', 1, 'ARRIVED'),
+       ('MN3002', '2020-06-16T09:15', 'LDN', '2020-06-16T13:00', 'MNK', 1, 'ARRIVED'),
+       ('BC2801', '2020-07-28T23:25', 'MNK', '2020-07-29T02:43', 'LDN', 2, 'ARRIVED'),
+       ('BC2801', '2020-08-01T11:00', 'LDN', '2020-08-01T14:15', 'MNK', 2, 'DEPARTED'),
+       ('TR3103', '2020-05-03T13:10', 'MSK', '2020-05-03T18:38', 'BSL', 3, 'ARRIVED'),
+       ('TR3103', '2020-05-10T07:15', 'BSL', '2020-05-10T012:44', 'MSK', 3, 'CANCELLED'),
+       ('CV9827', '2020-09-09T18:00', 'MNK', '2020-09-09T19:15', 'MSK', 4, 'SCHEDULED'),
+       ('CV9827', '2020-09-19T08:55', 'MSK', '2020-09-19T10:05', 'MNK', 4, 'SCHEDULED'),
+       ('QS8712', '2020-12-18T03:35', 'MNK', '2020-12-18T06:46', 'LDN', 2, 'ARRIVED');
 
 insert into ticket (passenger_no, passenger_name, flight_id, seat_no, cost)
 values ('112233', 'Иван Иванов', 1, 'A1', 200),
@@ -144,3 +143,39 @@ select (now() - interval '2 days')::date;
 select (now() - interval '2 days')::time;
 select '124'::int;
 -- select (now() - interval '2 days') CAST date;
+
+SELECT flight_id, count(*)
+FROM ticket
+         JOIN flight f
+              on f.id = ticket.flight_id
+WHERE flight_no = 'MN3002'
+  and departure_date::date = '2020-06-14'
+GROUP BY flight_id;
+
+-- SELECT * FROM seat
+-- WHERE aircraft_id = (SELECT flight_id
+--                      FROM ticket
+--                               JOIN flight f
+--                                    on f.id = ticket.flight_id
+--                      WHERE flight_no = 'MN3002'
+--                        and departure_date::date = '2020-06-14'
+--                      GROUP BY flight_id);
+
+SELECT aircraft_id, count(*)
+FROM seat
+WHERE aircraft_id = 1
+GROUP BY aircraft_id;
+
+SELECT t2.count -  t1.count
+FROM (SELECT aircraft_id, count(*)
+      FROM ticket
+               JOIN flight f
+                    on f.id = ticket.flight_id
+      WHERE flight_no = 'MN3002'
+        and departure_date::date = '2020-06-14'
+      GROUP BY aircraft_id) t1
+         JOIN (SELECT aircraft_id, count(*)
+               FROM seat
+               GROUP BY aircraft_id) t2
+              ON t1.aircraft_id = t2.aircraft_id;
+
