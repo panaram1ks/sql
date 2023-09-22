@@ -166,7 +166,7 @@ FROM seat
 WHERE aircraft_id = 1
 GROUP BY aircraft_id;
 
-SELECT t2.count -  t1.count
+SELECT t2.count - t1.count
 FROM (SELECT aircraft_id, count(*)
       FROM ticket
                JOIN flight f
@@ -178,4 +178,18 @@ FROM (SELECT aircraft_id, count(*)
                FROM seat
                GROUP BY aircraft_id) t2
               ON t1.aircraft_id = t2.aircraft_id;
+
+SELECT EXISTS(select 1 from ticket where id = 2);
+
+-- second var
+select s.seat_no
+from seat s
+where aircraft_id = 1
+  and not exists (SELECT seat_no
+                  FROM ticket t
+                           JOIN flight f
+                                on f.id = t.flight_id
+                  WHERE flight_no = 'MN3002'
+                    and departure_date::date = '2020-06-14'
+                      and s.seat_no = t.seat_no);
 
