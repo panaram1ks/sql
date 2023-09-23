@@ -276,4 +276,7 @@ select aircraft_id, t.seat_no
 from ticket t
          join flight f on f.id = t.flight_id
 where f.flight_no = 'MN3002'
-  and f.departure_date::date = '2020-06-14'
+  and f.departure_date::date = '2020-06-14';
+
+
+CREATE UNIQUE INDEX unique_flight_id_seat_no_idx ON ticket (flight_id, seat_no);
